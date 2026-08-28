@@ -1,0 +1,9 @@
+# YOLOv8 Dataset Configuration for LLVIP (Visible Camera Split)
+path: ../data/processed  # dataset root dir (relative to execution dir)
+train: images/train
+val: images/val
+test: images/test
+
+# Classes
+names:
+  0: person

@@ -1,0 +1,28 @@
+# YOLOv8n Training Hyperparameters for NoctVision
+model: yolov8n.pt
+data: configs/data.yaml
+epochs: 100
+batch: 16
+imgsz: 640
+device: 0             # CUDA device ID (e.g., 0) or 'cpu'
+workers: 8
+project: models/runs
+name: noctvision_yolov8n
+exist_ok: true
+
+# Optimization
+optimizer: AdamW
+lr0: 0.001
+lrf: 0.01
+momentum: 0.937
+weight_decay: 0.0005
+warmup_epochs: 3.0
+
+# Augmentations (Ultralytics built-in defaults complemented by src/augmentations.py)
+hsv_h: 0.015
+hsv_s: 0.7
+hsv_v: 0.4
+degrees: 0.0
+translate: 0.1
+scale: 0.5
+fliplr: 0.5
