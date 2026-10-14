@@ -1,0 +1,8 @@
+path: /Users/medurarvind/NoctVision/data/processed # Thats in my laptop
+train: images/train
+val: images/val
+test: images/test
+
+names:
+  0: person
+  

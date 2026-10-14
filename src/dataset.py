@@ -28,7 +28,8 @@ def voc_to_yolo(xml_path):
         w = (xmax-xmin)/img_w
         h = (ymax-ymin)/img_h
 
-        lines.append(f"0 {x_center:.6f} {y_center:.6f} {w:.6f} {h:.6f}")
+        lines.append(f"0 {x_center:.6f} {y_center:.6f} {w:.6f} {h:.6f}") # yolo format contains all the metrics
+        # in a normalised format between 0 and 1, hence dividing by the width
     return lines
 
 
@@ -57,14 +58,25 @@ def prepare_llvip_visible(raw_dir: str, output_dir: str, train_ratio: float = 0.
     print("Dataset directory structure initialized.")
 
 def convert_split(raw_dir: str, annotation_dir: str, output_dir: str, split):
-    image_folder = Path(raw_dir) / "visible" / split
+    image_folder = Path(raw_dir) / "visible" / split # the source file is from the raw directory + the split 
     for img_path in sorted(image_folder.glob("*.jpg")):
-        xml_path= Path(annotation_dir) / (img_path.stem + ".xml")
-        lines=voc_to_yolo(xml_path)
-        label_path=Path(output_dir) / "labels" / split / (img_path.stem + ".txt")
+        xml_path= Path(annotation_dir) / (img_path.stem + ".xml") # the corresponding xml file which has all the metrics
+        lines=voc_to_yolo(xml_path) #calculcate using the above function
+        label_path=Path(output_dir) / "labels" / split / (img_path.stem + ".txt") #store it in the LABELS directory 
         with open(label_path,"w") as f:
             f.write(("\n").join(lines))
         shutil.copy(img_path, Path(output_dir) / "images" /split / img_path.name)
+
+def val_split_maker(data_dir:str , videoids:list):
+    datapath= Path(data_dir)
+    movedvideos=0
+    for image_path in sorted((datapath/"images"/"train").glob("*.jpg")):
+        if image_path.stem[:2] in videoids: # the stem returns the full video id of which the first two is the non frame vid id
+            label_path = (datapath/"labels"/"train"/(image_path.stem + ".txt"))
+            shutil.move(image_path,(datapath/"images"/"val"/image_path.name))
+            shutil.move(label_path,(datapath/"labels"/"val"/(image_path.stem +".txt")))
+            movedvideos+=1
+    return f"{movedvideos} frames and text files moved to val folder"
 
 
 if __name__ == "__main__":
@@ -76,4 +88,5 @@ if __name__ == "__main__":
     prepare_llvip_visible(args.raw_dir, args.output_dir)
     convert_split(args.raw_dir, "LLVIP/Annotations", args.output_dir, "train")
     convert_split(args.raw_dir, "LLVIP/Annotations", args.output_dir, "test")
+    print(val_split_maker(args.output_dir, ["12", "03", "04"]))
 

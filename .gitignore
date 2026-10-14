@@ -24,6 +24,7 @@ exports/*
 results/*
 !results/.gitkeep
 runs/
+*.pt
 
 # IDE & OS
 .vscode/
